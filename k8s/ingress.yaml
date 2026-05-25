@@ -3,10 +3,21 @@ kind: Ingress
 metadata:
   name: rc-ingress
   namespace: rc
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "ResilienceCore Field"
 spec:
   ingressClassName: public
+  tls:
+    - hosts:
+        - rc.prozorec.bg
+      secretName: rc-prozorec-bg-tls
   rules:
-    - http:
+    - host: rc.prozorec.bg
+      http:
         paths:
           - path: /api
             pathType: Prefix
