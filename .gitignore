@@ -1,0 +1,25 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+
+# Node / Vite
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Local secrets (user-secrets live in ~/.microsoft/usersecrets, outside repo)
+**/appsettings.Development.json
+.env
+.env.*
+
+# K8s secrets (created via kubectl, not committed)
+k8s/secret-*.yaml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
