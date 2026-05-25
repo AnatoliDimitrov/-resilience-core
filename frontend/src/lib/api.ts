@@ -5,15 +5,32 @@ export interface Recommendation { action: string; rationale: string; responsible
 export interface Update { id: string; text: string; timestamp: string }
 export interface Analysis {
     id: string; createdAt: string; summary: string
+    triggeredBy: 'operator' | 'auto'
     priorities: Priority[]; recommendations: Recommendation[]
     clarifyingQuestions: string[]; knownFacts: string[]; unknowns: string[]
 }
 export interface Incident {
     id: string; type: string; location: string; initialReport: string
     createdAt: string; updates: Update[]; analyses: Analysis[]
+    lastOperatorActivityAt: string
+    lastAutoReassessmentAt: string | null
+    autoReassessmentCount: number
+    autoReassessmentEnabled: boolean
 }
 export interface CreateIncidentRequest { type: string; location: string; initialReport: string }
 export interface CreateIncidentResponse { incident: Incident; analysis: Analysis }
+
+async function readError(res: Response): Promise<string> {
+    const ctype = res.headers.get('content-type') ?? ''
+    if (ctype.includes('application/json')) {
+        try {
+            const body = await res.json()
+            if (body && typeof body.error === 'string') return body.error
+        } catch { /* fall through */ }
+    }
+    const text = await res.text().catch(() => '')
+    return text || `HTTP ${res.status}`
+}
 
 export async function createIncident(req: CreateIncidentRequest): Promise<CreateIncidentResponse> {
     const res = await fetch('/api/incidents', {
@@ -21,13 +38,13 @@ export async function createIncident(req: CreateIncidentRequest): Promise<Create
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(req)
     })
-    if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`)
+    if (!res.ok) throw new Error(await readError(res))
     return res.json()
 }
 
 export async function getIncident(id: string): Promise<Incident> {
     const res = await fetch(`/api/incidents/${id}`)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    if (!res.ok) throw new Error(await readError(res))
     return res.json()
 }
 
@@ -39,6 +56,29 @@ export async function appendUpdate(id: string, text: string): Promise<CreateInci
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })
     })
-    if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`)
+    if (!res.ok) throw new Error(await readError(res))
+    return res.json()
+}
+
+export async function setAutoReassessment(id: string, enabled: boolean): Promise<{ enabled: boolean }> {
+    const res = await fetch(`/api/incidents/${id}/auto-reassessment`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled })
+    })
+    if (!res.ok) throw new Error(await readError(res))
+    return res.json()
+}
+
+export interface IncidentSummary {
+    id: string
+    type: string
+    location: string
+    createdAt: string
+}
+
+export async function listIncidents(): Promise<IncidentSummary[]> {
+    const res = await fetch('/api/incidents')
+    if (!res.ok) throw new Error(await readError(res))
     return res.json()
 }

@@ -115,7 +115,7 @@ function Home() {
                             </ul>
                         </CardContent>
                         <CardFooter>
-                            <Button variant="outline" className="w-full" size="lg">
+                            <Button onClick={() => navigate("/archive")} variant="outline" className="w-full" size="lg">
                                 Архив
                             </Button>
                         </CardFooter>
@@ -123,9 +123,9 @@ function Home() {
                 </div>
 
                 {/* Footer */}
-                <footer className="mt-24 text-center text-xs text-muted-foreground/70">
+                {/* <footer className="mt-24 text-center text-xs text-muted-foreground/70">
                     Анатоли Димитров · фак. № 136кнз · науч. ръководител доц. д-р Боян Жеков
-                </footer>
+                </footer> */}
             </div>
         </div>
     )

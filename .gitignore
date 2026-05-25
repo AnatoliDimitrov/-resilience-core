@@ -23,3 +23,6 @@ k8s/secret-*.yaml
 Thumbs.db
 *.swp
 .idea/
+
+# Local dev SQLite DB (lives on PVC in cluster)
+backend/data/

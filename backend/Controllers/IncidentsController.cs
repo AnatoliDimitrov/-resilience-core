@@ -18,16 +18,26 @@ public class IncidentsController : ControllerBase
         _situational = s; _specialist = sp; _store = store; _log = log;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> List(CancellationToken ct)
+    {
+        var incidents = await _store.ListAsync(ct);
+        return Ok(incidents);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateIncidentRequest req, CancellationToken ct)
     {
+        var now = DateTime.UtcNow;
         var incident = new Incident
         {
             Id = Guid.NewGuid(),
             Type = req.Type,
             Location = req.Location,
             InitialReport = req.InitialReport,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = now,
+            LastOperatorActivityAt = now,
+            AutoReassessmentEnabled = true
         };
 
         var situational = await _situational.AnalyzeAsync(incident.InitialReport, incident.Updates, ct);
@@ -38,6 +48,7 @@ public class IncidentsController : ControllerBase
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
             Summary = specialist.Summary,
+            TriggeredBy = "operator",
             Priorities = specialist.Priorities,
             Recommendations = specialist.Recommendations,
             ClarifyingQuestions = situational.ClarifyingQuestions,
@@ -47,6 +58,7 @@ public class IncidentsController : ControllerBase
 
         incident.Analyses.Add(analysis);
         _store.Save(incident);
+        await _store.PersistAsync(incident, ct);
 
         _log.LogInformation("Incident {Id} created with {Priorities} priorities, {Recs} recommendations",
             incident.Id, analysis.Priorities.Count, analysis.Recommendations.Count);
@@ -67,6 +79,8 @@ public class IncidentsController : ControllerBase
             Timestamp = DateTime.UtcNow
         };
         incident.Updates.Add(update);
+        incident.LastOperatorActivityAt = DateTime.UtcNow;
+        incident.AutoReassessmentCount = 0;
 
         var situational = await _situational.AnalyzeAsync(incident.InitialReport, incident.Updates, ct);
         var specialist = await _specialist.AnalyzeAsync(situational, incident.Type, ct);
@@ -76,6 +90,7 @@ public class IncidentsController : ControllerBase
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
             Summary = specialist.Summary,
+            TriggeredBy = "operator",
             Priorities = specialist.Priorities,
             Recommendations = specialist.Recommendations,
             ClarifyingQuestions = situational.ClarifyingQuestions,
@@ -90,6 +105,21 @@ public class IncidentsController : ControllerBase
         return Ok(new { incident, analysis });
     }
 
+    [HttpPatch("{id:guid}/auto-reassessment")]
+    public IActionResult SetAutoReassessment(Guid id, [FromBody] AutoReassessmentRequest req)
+    {
+        var incident = _store.Get(id);
+        if (incident is null) return NotFound();
+        incident.AutoReassessmentEnabled = req.Enabled;
+        if (req.Enabled)
+        {
+            incident.LastOperatorActivityAt = DateTime.UtcNow;
+            incident.AutoReassessmentCount = 0;
+        }
+        _log.LogInformation("Incident {Id} auto-reassessment set to {Enabled}", id, req.Enabled);
+        return Ok(new { enabled = incident.AutoReassessmentEnabled });
+    }
+
     [HttpGet("{id:guid}")]
     public IActionResult Get(Guid id)
     {
@@ -97,3 +127,5 @@ public class IncidentsController : ControllerBase
         return inc is null ? NotFound() : Ok(inc);
     }
 }
+
+public record AutoReassessmentRequest(bool Enabled);
