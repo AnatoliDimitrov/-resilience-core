@@ -42,6 +42,11 @@ spec:
               value: Production
             - name: Database__Path
               value: /data/incidents.db
+            - name: Gemini__ApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: gemini
+                  key: apiKey
           volumeMounts:
             - name: data
               mountPath: /data
