@@ -6,6 +6,12 @@ public record Incident
       public required string Type { get; init; }              // "earthquake"
       public required string Location { get; init; }          // "София, район Лозенец"
       public required string InitialReport { get; init; }     // operator's first description
+      public string? Casualties { get; init; }
+      public string? BlockedRoutes { get; init; }
+      public string? AvailableResources { get; init; }
+      public string? MissingResources { get; init; }
+      public string? Urgency { get; init; }
+      public string? Notes { get; init; }
       public required DateTime CreatedAt { get; init; }
       public List<Update> Updates { get; init; } = new();
       public List<Analysis> Analyses { get; init; } = new();

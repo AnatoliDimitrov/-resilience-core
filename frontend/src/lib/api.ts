@@ -17,7 +17,17 @@ export interface Incident {
     autoReassessmentCount: number
     autoReassessmentEnabled: boolean
 }
-export interface CreateIncidentRequest { type: string; location: string; initialReport: string }
+export interface CreateIncidentRequest {
+    type: string
+    location: string
+    initialReport: string
+    casualties?: string
+    blockedRoutes?: string
+    availableResources?: string
+    missingResources?: string
+    urgency?: string
+    notes?: string
+}
 export interface CreateIncidentResponse { incident: Incident; analysis: Analysis }
 
 async function readError(res: Response): Promise<string> {

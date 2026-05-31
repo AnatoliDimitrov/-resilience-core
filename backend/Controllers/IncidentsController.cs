@@ -35,12 +35,19 @@ public class IncidentsController : ControllerBase
             Type = req.Type,
             Location = req.Location,
             InitialReport = req.InitialReport,
+            Casualties = req.Casualties,
+            BlockedRoutes = req.BlockedRoutes,
+            AvailableResources = req.AvailableResources,
+            MissingResources = req.MissingResources,
+            Urgency = req.Urgency,
+            Notes = req.Notes,
             CreatedAt = now,
             LastOperatorActivityAt = now,
             AutoReassessmentEnabled = true
         };
 
-        var situational = await _situational.AnalyzeAsync(incident.InitialReport, incident.Updates, ct);
+        var fullReport = BuildFullReport(incident);
+        var situational = await _situational.AnalyzeAsync(fullReport, incident.Updates, ct);
         var specialist = await _specialist.AnalyzeAsync(situational, incident.Type, ct);
 
         var analysis = new Analysis
@@ -125,6 +132,18 @@ public class IncidentsController : ControllerBase
     {
         var inc = _store.Get(id);
         return inc is null ? NotFound() : Ok(inc);
+    }
+
+    private static string BuildFullReport(Incident inc)
+    {
+        var parts = new List<string> { inc.InitialReport };
+        if (!string.IsNullOrWhiteSpace(inc.Casualties)) parts.Add("Пострадали: " + inc.Casualties);
+        if (!string.IsNullOrWhiteSpace(inc.BlockedRoutes)) parts.Add("Блокирани маршрути: " + inc.BlockedRoutes);
+        if (!string.IsNullOrWhiteSpace(inc.AvailableResources)) parts.Add("Налични ресурси: " + inc.AvailableResources);
+        if (!string.IsNullOrWhiteSpace(inc.MissingResources)) parts.Add("Липсващи ресурси: " + inc.MissingResources);
+        if (!string.IsNullOrWhiteSpace(inc.Urgency)) parts.Add("Ниво на спешност: " + inc.Urgency);
+        if (!string.IsNullOrWhiteSpace(inc.Notes)) parts.Add("Допълнителни бележки: " + inc.Notes);
+        return string.Join("\n", parts);
     }
 }
 

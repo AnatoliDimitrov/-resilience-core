@@ -72,6 +72,20 @@ using System.Net.Http.Json;
           return text;
       }
 
+      public async Task<bool> PingAsync(CancellationToken ct = default)
+      {
+          try
+          {
+              var url = $"v1beta/models/{_model}?key={_apiKey}";
+              var resp = await _http.GetAsync(url, ct);
+              return resp.IsSuccessStatusCode;
+          }
+          catch
+          {
+              return false;
+          }
+      }
+
       // ---- request/response DTOs (kept private to the class) ----
 
       private record GeminiRequest

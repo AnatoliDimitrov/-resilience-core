@@ -71,7 +71,8 @@ public class ReassessmentService : BackgroundService
         var situationalAgent = scope.ServiceProvider.GetRequiredService<SituationalAgent>();
         var specialistAgent = scope.ServiceProvider.GetRequiredService<SpecialistAgent>();
 
-        var situational = await situationalAgent.AnalyzeAsync(incident.InitialReport, incident.Updates, ct);
+        var fullReport = BuildFullReport(incident);
+        var situational = await situationalAgent.AnalyzeAsync(fullReport, incident.Updates, ct);
         var specialist = await specialistAgent.AnalyzeAsync(situational, incident.Type, ct, silenceElapsed: silenceFromOperator);
 
         var analysis = new Analysis
@@ -90,5 +91,17 @@ public class ReassessmentService : BackgroundService
         incident.LastAutoReassessmentAt = DateTime.UtcNow;
         incident.AutoReassessmentCount += 1;
         _store.Save(incident);
+    }
+
+    private static string BuildFullReport(Incident inc)
+    {
+        var parts = new List<string> { inc.InitialReport };
+        if (!string.IsNullOrWhiteSpace(inc.Casualties)) parts.Add("Пострадали: " + inc.Casualties);
+        if (!string.IsNullOrWhiteSpace(inc.BlockedRoutes)) parts.Add("Блокирани маршрути: " + inc.BlockedRoutes);
+        if (!string.IsNullOrWhiteSpace(inc.AvailableResources)) parts.Add("Налични ресурси: " + inc.AvailableResources);
+        if (!string.IsNullOrWhiteSpace(inc.MissingResources)) parts.Add("Липсващи ресурси: " + inc.MissingResources);
+        if (!string.IsNullOrWhiteSpace(inc.Urgency)) parts.Add("Ниво на спешност: " + inc.Urgency);
+        if (!string.IsNullOrWhiteSpace(inc.Notes)) parts.Add("Допълнителни бележки: " + inc.Notes);
+        return string.Join("\n", parts);
     }
 }
