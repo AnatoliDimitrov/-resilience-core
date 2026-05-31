@@ -81,7 +81,7 @@ export function NewSignal() {
                                 <Label htmlFor="type">Тип инцидент</Label>
                                 <select id="type" value={type} onChange={(e) => setType(e.target.value)}
                                     disabled={submitting}
-                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                                     {INCIDENT_TYPES.map(t => (
                                         <option key={t.value} value={t.value}>{t.label}</option>
                                     ))}
@@ -91,7 +91,7 @@ export function NewSignal() {
                                 <Label htmlFor="urgency">Ниво на спешност</Label>
                                 <select id="urgency" value={urgency} onChange={(e) => setUrgency(e.target.value)}
                                     disabled={submitting}
-                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                                     {URGENCY_OPTIONS.map(u => (
                                         <option key={u.value} value={u.value}>{u.label}</option>
                                     ))}

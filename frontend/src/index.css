@@ -148,3 +148,7 @@
     body { background: white !important; color: black !important; }
     .prose-report h2 { border-bottom-color: #999 !important; }
 }
+
+.dark select {
+    color-scheme: dark;
+}
