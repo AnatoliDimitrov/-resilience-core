@@ -37,6 +37,7 @@ public class GeminiClient
     }
 
     public string PrimaryModel => _models[0];
+    public string? LastUsedModel { get; private set; }
 
     public async Task<string> GenerateAsync(
         string userPrompt,
@@ -104,6 +105,8 @@ public class GeminiClient
 
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidOperationException($"Gemini ({model}) returned empty response.");
+
+            LastUsedModel = model;
 
             if (i > 0)
                 _log.LogInformation("Gemini fallback succeeded on {Model} (primary {Primary} was unavailable)",

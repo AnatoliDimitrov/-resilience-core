@@ -25,7 +25,8 @@ public class HealthController : ControllerBase
         {
             status = kbLoaded && geminiOk ? "ok" : "degraded",
             knowledgeBase = kbLoaded,
-            geminiReachable = geminiOk
+            geminiReachable = geminiOk,
+            activeModel = _gemini.LastUsedModel ?? _gemini.PrimaryModel
         });
     }
 }
