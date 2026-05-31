@@ -60,6 +60,9 @@ public class ReportRenderer
     private static string TypeLabel(string t) => t switch
     {
         "earthquake" => "Земетресение",
+        "fire" => "Пожар",
+        "flood" => "Наводнение",
+        "industrial" => "Индустриална авария",
         _ => t
     };
 }
