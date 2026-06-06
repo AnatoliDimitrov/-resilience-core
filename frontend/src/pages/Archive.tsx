@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, ScrollText, Loader2, Inbox, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Home, ScrollText, Loader2, Inbox, ChevronRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -11,8 +11,6 @@ export default function Archive() {
     const [items, setItems] = useState<IncidentSummary[] | null>(null)
     const [error, setError] = useState<string | null>(null)
     const lastId = typeof window !== 'undefined' ? localStorage.getItem('lastIncidentId') : null
-    const backTo = lastId ? `/incident/${lastId}` : '/'
-    const backLabel = lastId ? 'Към сесията' : 'Начало' 
 
     useEffect(() => {
         listIncidents()
@@ -25,8 +23,13 @@ export default function Archive() {
             <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
                     <Button variant="ghost" size="sm" asChild>
-                        <Link to={backTo}><ArrowLeft className="size-4 mr-1.5" />{backLabel}</Link>
+                        <Link to="/"><Home className="size-4 mr-1.5" />Начало</Link>
                     </Button>
+                    {lastId && (
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link to={`/incident/${lastId}`}><ArrowLeft className="size-4 mr-1.5" />Към сесията</Link>
+                        </Button>
+                    )}
                     <div className="flex-1 flex items-center gap-2">
                         <ScrollText className="size-4 text-blue-400" />
                         <span className="font-medium">Архив на сесиите</span>

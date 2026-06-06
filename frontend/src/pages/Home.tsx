@@ -49,8 +49,11 @@ function Home() {
 
                 <div className="text-center max-w-3xl mx-auto">
                     <h1 className="text-5xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 bg-clip-text text-transparent">
-                        ResilienceCore Field
+                        ОПОРА
                     </h1>
+                    <p className="mt-3 text-base lg:text-lg font-medium text-muted-foreground/80 tracking-wide">
+                        Оперативна платформа за обобщаване, реакция и анализ
+                    </p>
                     <p className="mt-6 text-lg lg:text-xl text-muted-foreground leading-relaxed">
                         Локален ИИ хъб за координация при кризи. Двуслойна памет,
                         ситуационна осведоменост и непрекъснат анализ — в реално време,

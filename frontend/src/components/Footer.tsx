@@ -16,7 +16,7 @@ export function Footer() {
             <div className="max-w-7xl mx-auto px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-0.5 text-[11px] leading-tight text-muted-foreground">
                 <span className="flex items-center gap-1 text-foreground font-medium">
                     <GraduationCap className="size-3.5" />
-                    ResilienceCore Field
+                    ОПОРА
                 </span>
                 <span className="opacity-50">·</span>
                 <span>дипломна работа на <span className="text-foreground">Анатоли Димитров</span>, 136кнз</span>
